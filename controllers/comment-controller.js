@@ -13,35 +13,58 @@ const commentController = {
                 );
             })
             .then(dbPizzaData => {
-                if(!dbPizzaData) {
+                if (!dbPizzaData) {
                     return res.status(404).json({ message: 'No pizza with that id exists!' })
                 }
                 res.json(dbPizzaData);
             })
             .catch(err => res.json(err));
     },
+    addReply({ params, body }, res) {
+        Comment.findOneAndUpdate(
+            { _id: params.commentId },
+            { $push: { replies: body } },
+            { new: true }
+        )
+            .then(dbPizzaData => {
+                if (!dbPizzaData) {
+                    return res.status(404).json({ message: 'No pizza with that id exists!' });
+                }
+                res.json(dbPizzaData);
+            })
+            .catch(err => res.json(err));
+    },
+    removeReply({ params }, res) {
+        Comment.findOneAndUpdate(
+            { _id: params.commentId },
+            { $pull: { replies: { replyId: params.replyId } } },
+            { new: true }
+        )
+            .then(dbPizzaData => res.json(dbPizzaData))
+            .catch(err => res.json(err));
+    },
     removeComment({ params }, res) {
         Comment.findOneAndDelete({
             _id: params.commentId
         })
-        .then(deletedComment => {
-            if (!deletedComment) {
-               return res.status(404).json({ message: 'No comment with this id exists!' })
-            }
-         // since 'findOneAndDelete' returns data back, we can use the returned data to identify the data on the Pizza model and remove it
-            return Pizza.findOneAndUpdate(
-                { _id: params.pizzaId },
-                { $pull: { comments: params.commentId } },
-                { new: true }
-            );
-        })
-        .then(dbPizzaData => {
-            if (!dbPizzaData) {
-                return res.status(404).json({ message: 'No pizza with that id exists!' })
-            }
-            res.json(dbPizzaData)
-        })
-        .catch(err => res.json(err));
+            .then(deletedComment => {
+                if (!deletedComment) {
+                    return res.status(404).json({ message: 'No comment with this id exists!' })
+                }
+                // since 'findOneAndDelete' returns data back, we can use the returned data to identify the data on the Pizza model and remove it
+                return Pizza.findOneAndUpdate(
+                    { _id: params.pizzaId },
+                    { $pull: { comments: params.commentId } },
+                    { new: true }
+                );
+            })
+            .then(dbPizzaData => {
+                if (!dbPizzaData) {
+                    return res.status(404).json({ message: 'No pizza with that id exists!' })
+                }
+                res.json(dbPizzaData)
+            })
+            .catch(err => res.json(err));
 
     }
 }
