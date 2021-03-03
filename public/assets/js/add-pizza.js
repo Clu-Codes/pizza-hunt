@@ -67,6 +67,8 @@ const handlePizzaSubmit = event => {
   })
   .catch(err => {
     console.log(err);
+    // recording the data of a User's pizza when their internet is unstable
+    saveRecord(formData);
   });
 };
 
