@@ -44,7 +44,7 @@ const pizzaController = {
             .catch(err => res.status(400).json(err));
     },
     updatePizza({ params, body }, res) {
-        Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true })
+        Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
         // Mongoose is finding the document, updating it, then returning the updated document. Without '{ new: true }', the original version of the document would be returned. There are also Mongoose and MongoDB methods '.updateOne()' and '.updateMany()' that will update without returning the documents.
             .then(dbPizzaData => {
                 if (!dbPizzaData) {
